@@ -12,26 +12,28 @@ profileForm.addEventListener("submit", async function (event) {
     const jobType = document.getElementById("jobType").value;
     const availability = document.getElementById("availability").value;
 
+    console.log("Sending profile to Supabase...");
+
     const { data, error } = await supabaseClient
         .from("profiles")
-        .insert([
-            {
-                name: name,
-                phone: phone,
-                email: email,
-                age: age,
-                location: location,
-                skills: skills,
-                job_type: jobType,
-                availability: availability
-            }
-        ]);
+        .insert({
+            name: name,
+            phone: phone,
+            email: email,
+            age: Number(age),
+            location: location,
+            skills: skills,
+            job_type: jobType,
+            availability: availability
+        })
+        .select();
 
     if (error) {
-        console.error(error);
-        alert("Profile was not saved.");
-    } else {
-        alert("Profile saved successfully!");
-        profileForm.reset();
+        console.error("SUPABASE ERROR:", error);
+        alert("Error: " + error.message);
+        return;
     }
+
+    console.log("Saved:", data);
+    alert("✅ Profile saved successfully!");
 });
